@@ -1,12 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { GetLibrariesDto } from './dto/get-libraries.dto';
 import { GetLibraryParamsDto } from './dto/get-library.dto';
+import { CreateLibraryDto } from './dto/create-library.dto';
 import { Library, Libraries } from './interfaces/library.interface';
+import { GithubService } from '../github/github.service';
+import { NpmService } from '../npm/npm.service';
 
 @Injectable()
 export class LibraryService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly githubService: GithubService,
+    private readonly npmService: NpmService,
+  ) {}
 
   async getLibraries(query: GetLibrariesDto): Promise<Libraries> {
     const {
@@ -105,10 +112,10 @@ export class LibraryService {
     };
   }
 
-  async getLibrary(params: GetLibraryParamsDto) {
+  async getLibrary(params: GetLibraryParamsDto): Promise<Library | null> {
     const { id } = params;
 
-    return this.prisma.library.findUnique({
+    return await this.prisma.library.findUnique({
       where: {
         id,
       },
@@ -119,5 +126,137 @@ export class LibraryService {
         components: true,
       },
     });
+  }
+
+  async createLibrary(body: CreateLibraryDto): Promise<Library> {
+    const existingLibrary = await this.prisma.library.findFirst({
+      where: {
+        value: body.value,
+      },
+    });
+
+    if (existingLibrary) {
+      throw new BadRequestException({
+        message: `Library with value ${body.value} already exists.`,
+      });
+    }
+
+    const categoryExists = await this.prisma.category.findUnique({
+      where: { value: body.category },
+    });
+
+    if (!categoryExists) {
+      throw new BadRequestException({
+        message: `Category with ID ${body.category} does not exist`,
+      });
+    }
+
+    const [existingFrameworks, existingFeatures, existingComponents] =
+      await Promise.all([
+        this.prisma.framework.findMany({
+          where: { value: { in: body.frameworks || [] } },
+        }),
+        this.prisma.feature.findMany({
+          where: { value: { in: body.features || [] } },
+        }),
+        this.prisma.component.findMany({
+          where: { value: { in: body.components || [] } },
+        }),
+      ]);
+
+    if (
+      !existingFrameworks.some((framework) =>
+        body.frameworks.includes(framework.value),
+      )
+    ) {
+      throw new BadRequestException({
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        message: `Wrong frameworks array: ${body.frameworks}.`,
+      });
+    }
+    if (
+      !existingFeatures.some((feature) => body.features.includes(feature.value))
+    ) {
+      throw new BadRequestException({
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        message: `Wrong features array: ${body.features}.`,
+      });
+    }
+    if (
+      !existingComponents.some((component) =>
+        body.components.includes(component.value),
+      )
+    ) {
+      throw new BadRequestException({
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        message: `Wrong components array: ${body.components}.`,
+      });
+    }
+
+    let githubData;
+    let npmData;
+    if (body.githubRepo && body.npmPackage) {
+      const repo = body.githubRepo.replace('https://github.com/', '');
+      const packageName = body.npmPackage.replace(
+        'https://www.npmjs.com/package/',
+        '',
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const [githubRepoData, npmPackageData] = await Promise.all([
+        this.githubService.fetchLibraryGithubData(repo),
+        this.npmService.fetchLibraryNpmData(packageName),
+      ]);
+
+      if (githubRepoData) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        githubData = githubRepoData;
+      }
+      if (npmPackageData) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        npmData = npmPackageData;
+      }
+    }
+
+    const library: Library = await this.prisma.library.create({
+      data: {
+        name: body.name,
+        value: body.value,
+        img: body.img || null,
+        link: body.link || null,
+        githubRepo: body.githubRepo || null,
+        npmPackage: body.npmPackage || null,
+        category: {
+          connect: {
+            id: categoryExists.id,
+          },
+        },
+        frameworks: {
+          connect: existingFrameworks.map((framework) => ({
+            id: framework.id,
+          })),
+        },
+        features: {
+          connect: existingFeatures.map((feature) => ({ id: feature.id })),
+        },
+        components: {
+          connect: existingComponents.map((component) => ({
+            id: component.id,
+          })),
+        },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        githubStars: (githubData?.stargazers_count as number) || 0,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        npmDownloads: (npmData?.downloads as number) || 0,
+      },
+      include: {
+        category: true,
+        frameworks: true,
+        features: true,
+        components: true,
+      },
+    });
+
+    return library;
   }
 }
