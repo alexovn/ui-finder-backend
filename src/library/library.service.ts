@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { GetLibrariesDto } from './dto/get-libraries.dto';
+import { GetLibraryParamsDto } from './dto/get-library.dto';
 import { Library, Libraries } from './interfaces/library.interface';
 
 @Injectable()
@@ -102,5 +103,21 @@ export class LibraryService {
         },
       },
     };
+  }
+
+  async getLibrary(params: GetLibraryParamsDto) {
+    const { id } = params;
+
+    return this.prisma.library.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        category: true,
+        frameworks: true,
+        features: true,
+        components: true,
+      },
+    });
   }
 }
