@@ -6,6 +6,10 @@ import { CreateLibraryDto } from './dto/create-library.dto';
 import { Library, Libraries } from './interfaces/library.interface';
 import { GithubService } from '../github/github.service';
 import { NpmService } from '../npm/npm.service';
+import {
+  UpdateLibraryDto,
+  UpdateLibraryParamsDto,
+} from './dto/update-library.dto';
 
 @Injectable()
 export class LibraryService {
@@ -249,6 +253,123 @@ export class LibraryService {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         npmDownloads: (npmData?.downloads as number) || 0,
       },
+      include: {
+        category: true,
+        frameworks: true,
+        features: true,
+        components: true,
+      },
+    });
+
+    return library;
+  }
+
+  async updateLibrary(
+    params: UpdateLibraryParamsDto,
+    body: UpdateLibraryDto,
+  ): Promise<Library> {
+    const { id } = params;
+
+    const existingLibrary = await this.prisma.library.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingLibrary) {
+      throw new BadRequestException({
+        message: `Library with ID ${id} does not exist.`,
+      });
+    }
+
+    let categoryExists;
+    if (body.category) {
+      categoryExists = await this.prisma.category.findUnique({
+        where: { value: body.category },
+      });
+
+      if (!categoryExists) {
+        throw new BadRequestException({
+          message: `Category with ID ${body.category} does not exist.`,
+        });
+      }
+    }
+
+    const existingFrameworks = body.frameworks
+      ? await this.prisma.framework.findMany({
+          where: { value: { in: body.frameworks } },
+        })
+      : [];
+
+    const existingFeatures = body.features
+      ? await this.prisma.feature.findMany({
+          where: { value: { in: body.features } },
+        })
+      : [];
+
+    const existingComponents = body.components
+      ? await this.prisma.component.findMany({
+          where: { value: { in: body.components } },
+        })
+      : [];
+
+    let githubData;
+    let npmData;
+    if (body.githubRepo && body.npmPackage) {
+      const repo = body.githubRepo.replace('https://github.com/', '');
+      const packageName = body.npmPackage.replace(
+        'https://www.npmjs.com/package/',
+        '',
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const [githubRepoData, npmPackageData] = await Promise.all([
+        this.githubService.fetchLibraryGithubData(repo),
+        this.npmService.fetchLibraryNpmData(packageName),
+      ]);
+
+      if (githubRepoData) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        githubData = githubRepoData;
+      }
+      if (npmPackageData) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        npmData = npmPackageData;
+      }
+    }
+
+    const updateData = {
+      name: body.name || undefined,
+      value: body.value || undefined,
+      img: body.img || undefined,
+      link: body.link || undefined,
+      category: categoryExists
+        ? { connect: { id: categoryExists.id } }
+        : undefined,
+      frameworks: existingFrameworks.length
+        ? { set: existingFrameworks.map((f) => ({ id: f.id })) }
+        : undefined,
+      features: existingFeatures.length
+        ? { set: existingFeatures.map((f) => ({ id: f.id })) }
+        : undefined,
+      components: existingComponents.length
+        ? { set: existingComponents.map((c) => ({ id: c.id })) }
+        : undefined,
+      githubRepo: body.githubRepo || undefined,
+      npmPackage: body.npmPackage || undefined,
+      githubStars: githubData
+        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          (githubData.stargazers_count as number)
+        : undefined,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      npmDownloads: npmData ? (npmData.downloads as number) : undefined,
+    };
+
+    const library: Library = await this.prisma.library.update({
+      where: {
+        id,
+      },
+      data: updateData,
       include: {
         category: true,
         frameworks: true,
