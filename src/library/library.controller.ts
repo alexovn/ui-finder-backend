@@ -8,6 +8,7 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
+
 import { LibraryService } from './library.service';
 import { GetLibrariesDto } from './dto/get-libraries.dto';
 import { Library, Libraries } from './interfaces/library.interface';
@@ -17,11 +18,12 @@ import {
   UpdateLibraryDto,
   UpdateLibraryParamsDto,
 } from './dto/update-library.dto';
-
+import { Public } from '../auth/decorators/public.decorator';
 @Controller('libraries')
 export class LibraryController {
   constructor(private readonly libraryService: LibraryService) {}
 
+  @Public()
   @Get()
   async getLibraries(
     @Query(new ValidationPipe()) getLibrariesDto: GetLibrariesDto,
@@ -29,6 +31,7 @@ export class LibraryController {
     return await this.libraryService.getLibraries(getLibrariesDto);
   }
 
+  @Public()
   @Get(':id')
   async getLibrary(
     @Param(new ValidationPipe()) params: GetLibraryParamsDto,
