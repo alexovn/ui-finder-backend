@@ -1,86 +1,109 @@
-import { PrismaClient } from '@prisma/client'
-import libraryList from '../data/library/libraryList.json' assert { type: 'json' }
-import frameworkList from '../data/filter/frameworkList.json' assert { type: 'json' }
-import featureList from '../data/filter/featureList.json' assert { type: 'json' }
-import componentList from '../data/filter/componentList.json' assert { type: 'json' }
-import categoryList from '../data/filter/categoryList.json' assert { type: 'json' }
+import { PrismaClient } from '../generated/prisma/client/index.js';
+import fs from 'fs';
+import path from 'path';
+
+const __dirname = path.resolve();
+
+const libraryList = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'data/library/libraryList.json'), 'utf-8'),
+);
+const frameworkList = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'data/filter/frameworkList.json'), 'utf-8'),
+);
+const featureList = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'data/filter/featureList.json'), 'utf-8'),
+);
+const componentList = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'data/filter/componentList.json'), 'utf-8'),
+);
+const categoryList = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'data/filter/categoryList.json'), 'utf-8'),
+);
 
 const prisma = new PrismaClient();
 
 async function seed() {
   const categoryEntries = await Promise.all(
-    categoryList.map(category =>
+    categoryList.map((category) =>
       prisma.category.upsert({
         where: { value: category.value },
         update: {
           name: category.name,
-          value: category.value
+          value: category.value,
         },
         create: {
           name: category.name,
-          value: category.value
+          value: category.value,
         },
-      })
-    )
-  )
+      }),
+    ),
+  );
 
   const frameworkEntries = await Promise.all(
-    frameworkList.map(framework =>
+    frameworkList.map((framework) =>
       prisma.framework.upsert({
         where: { value: framework.value },
         update: {
           name: framework.name,
-          value: framework.value
+          value: framework.value,
         },
         create: {
           name: framework.name,
-          value: framework.value
+          value: framework.value,
         },
-      })
-    )
-  )
+      }),
+    ),
+  );
 
   const featureEntries = await Promise.all(
-    featureList.map(feature =>
+    featureList.map((feature) =>
       prisma.feature.upsert({
         where: { value: feature.value },
         update: {
           name: feature.name,
-          value: feature.value
+          value: feature.value,
         },
         create: {
           name: feature.name,
-          value: feature.value
+          value: feature.value,
         },
-      })
-    )
-  )
+      }),
+    ),
+  );
   const componentEntries = await Promise.all(
-    componentList.map(component =>
+    componentList.map((component) =>
       prisma.component.upsert({
         where: { value: component.value },
         update: {
           name: component.name,
-          value: component.value
+          value: component.value,
         },
         create: {
           name: component.name,
-          value: component.value
+          value: component.value,
         },
-      })
-    )
-  )
+      }),
+    ),
+  );
 
   await Promise.all(
-    libraryList.map(async library => {
-      const categoryEntry = categoryEntries.find(category => category.value === library.category);
-      const frameworkEntriesToConnect = frameworkEntries.filter(framework => library.frameworks.includes(framework.value));
-      const featureEntriesToConnect = featureEntries.filter(feature => library.features.includes(feature.value));
-      const componentEntriesToConnect = (
-        library.components
-        && library.components.length
-        && componentEntries.filter(component => library.components.includes(component.value))
-      ) || [];
+    libraryList.map(async (library) => {
+      const categoryEntry = categoryEntries.find(
+        (category) => category.value === library.category,
+      );
+      const frameworkEntriesToConnect = frameworkEntries.filter((framework) =>
+        library.frameworks.includes(framework.value),
+      );
+      const featureEntriesToConnect = featureEntries.filter((feature) =>
+        library.features.includes(feature.value),
+      );
+      const componentEntriesToConnect =
+        (library.components &&
+          library.components.length &&
+          componentEntries.filter((component) =>
+            library.components.includes(component.value),
+          )) ||
+        [];
 
       await prisma.library.upsert({
         where: { value: library.value },
@@ -92,17 +115,23 @@ async function seed() {
           githubRepo: library.githubRepo,
           npmPackage: library.npmPackage,
           category: {
-            connect: { id: categoryEntry?.id }
+            connect: { id: categoryEntry?.id },
           },
           frameworks: {
-            connect: frameworkEntriesToConnect.map(framework => ({ id: framework.id }))
+            connect: frameworkEntriesToConnect.map((framework) => ({
+              id: framework.id,
+            })),
           },
           features: {
-            connect: featureEntriesToConnect.map(feature => ({ id: feature.id }))
+            connect: featureEntriesToConnect.map((feature) => ({
+              id: feature.id,
+            })),
           },
           components: {
-            connect: componentEntriesToConnect.map(component => ({ id: component.id }))
-          }
+            connect: componentEntriesToConnect.map((component) => ({
+              id: component.id,
+            })),
+          },
         },
         create: {
           name: library.name,
@@ -112,28 +141,40 @@ async function seed() {
           githubRepo: library.githubRepo,
           npmPackage: library.npmPackage,
           category: {
-            connect: { id: categoryEntry?.id }
+            connect: { id: categoryEntry?.id },
           },
           frameworks: {
-            connect: frameworkEntriesToConnect.map(framework => ({ id: framework.id }))
+            connect: frameworkEntriesToConnect.map((framework) => ({
+              id: framework.id,
+            })),
           },
           features: {
-            connect: featureEntriesToConnect.map(feature => ({ id: feature.id }))
+            connect: featureEntriesToConnect.map((feature) => ({
+              id: feature.id,
+            })),
           },
           components: {
-            connect: componentEntriesToConnect.map(component => ({ id: component.id }))
-          }
-        }
+            connect: componentEntriesToConnect.map((component) => ({
+              id: component.id,
+            })),
+          },
+        },
       });
-    })
+    }),
   );
 }
 
-try {
-  await seed();
-  await prisma.$disconnect();
-} catch (e) {
-  console.error(e);
-  await prisma.$disconnect();
-  process.exit(1);
+async function seedDb() {
+  try {
+    console.log('Seeding db...');
+    await seed();
+    await prisma.$disconnect();
+    console.log('Db has been seeded!');
+  } catch (e) {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  }
 }
+
+seedDb();

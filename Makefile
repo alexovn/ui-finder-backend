@@ -1,5 +1,5 @@
 up:
-	@docker compose --env-file .env.prod up -d --build
+	@docker compose --env-file .env.prod up -d --build --force-recreate --remove-orphans
 
 down:
 	@docker compose --env-file .env.prod down
@@ -12,3 +12,6 @@ stop:
 
 restart:
 	@docker compose --env-file .env.prod restart
+
+env-backend:
+	@docker compose --env-file .env.prod exec backend /bin/sh
