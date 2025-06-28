@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:17-alpine
+    hostname: db
+    container_name: ui-finder-db
+    restart: always
+    env_file:
+    - .env.prod
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - ui-finder-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ui-finder-backend
+    env_file:
+     - .env.prod
+    environment:
+      - PORT=${PORT} 
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - db
+    networks:
+      - ui-finder-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: ui-finder-pgadmin
+    restart: always
+    env_file:
+    - .env.prod
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - ${PGADMIN_HOST_PORT}:${PGADMIN_CONTAINER_PORT}
+    depends_on:
+      - db
+    networks:
+     - ui-finder-net
+
+networks:
+  ui-finder-net:
+
+volumes:
+  pgdata:
