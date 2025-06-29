@@ -2,7 +2,7 @@
   {
     "name": "Nuxt UI",
     "value": "nuxt-ui",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/nuxt.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199209/nuxt_anugwc.svg",
     "link": "https://ui.nuxt.com/",
     "category": "library",
     "frameworks": ["nuxt"],
@@ -32,7 +32,7 @@
   {
     "name": "PrimeVue",
     "value": "prime-vue",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/primevue.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199210/primevue_ktkhzn.svg",
     "link": "https://primevue.org/",
     "category": "library",
     "frameworks": ["nuxt", "vue"],
@@ -62,6 +62,7 @@
   {
     "name": "Vue Datepicker",
     "value": "vue-datepicker",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199212/vue-datepicker_st0nlw.png",
     "link": "https://vue3datepicker.com/",
     "category": "component",
     "frameworks": ["nuxt", "vue"],
@@ -77,7 +78,7 @@
   {
     "name": "Tailwind UI",
     "value": "tailwind-ui",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/tailwindcss.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199212/tailwindcss_ifxumb.svg",
     "link": "https://tailwindui.com/",
     "category": "library",
     "frameworks": ["nuxt", "vue", "react"],
@@ -100,6 +101,7 @@
   {
     "name": "TailGrids",
     "value": "tail-grids",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199211/tailgrids-full_jycee8.svg",
     "link": "https://tailgrids.com/",
     "category": "library",
     "frameworks": ["nuxt", "vue", "react"],
@@ -128,7 +130,7 @@
   {
     "name": "Headless UI (Vue)",
     "value": "headless-ui-vue",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/headlessui.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199207/headlessui_vzrrjx.svg",
     "link": "https://headlessui.com/",
     "category": "library",
     "frameworks": ["nuxt", "vue"],
@@ -149,7 +151,7 @@
   {
     "name": "Headless UI (React)",
     "value": "headless-ui-react",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/headlessui.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199207/headlessui_vzrrjx.svg",
     "link": "https://headlessui.com/",
     "category": "library",
     "frameworks": ["react"],
@@ -170,7 +172,7 @@
   {
     "name": "PrimeReact",
     "value": "prime-react",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/primereact.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199209/primereact_k2vvkw.svg",
     "link": "https://primereact.org/",
     "category": "library",
     "frameworks": ["react"],
@@ -200,7 +202,7 @@
   {
     "name": "Vue Final Modal",
     "value": "vue-final-modal",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/vue-final-modal.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199212/vue-final-modal_fcw46i.svg",
     "link": "https://vue-final-modal.org/",
     "category": "component",
     "frameworks": [
@@ -219,7 +221,7 @@
   {
     "name": "Reka UI",
     "value": "reka-ui",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/reka-ui.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199211/reka-ui_cjia4a.svg",
     "link": "https://reka-ui.com/",
     "category": "library",
     "frameworks": [
@@ -247,7 +249,7 @@
   {
     "name": "Radix Vue",
     "value": "radix-vue",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/reka-ui.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199211/reka-ui_cjia4a.svg",
     "link": "https://www.radix-vue.com/",
     "category": "library",
     "frameworks": [
@@ -275,7 +277,7 @@
   {
     "name": "Inspira UI",
     "value": "inspira-ui",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/inspira-ui.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199206/inspira-ui_xn01jm.svg",
     "link": "https://inspira-ui.com/",
     "category": "library",
     "frameworks": [
@@ -320,7 +322,7 @@
   {
     "name": "shadcn/ui",
     "value": "shadcn-ui",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/shadcn-ui.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199211/shadcn-ui_nmmqcl.svg",
     "link": "https://ui.shadcn.com/",
     "category": "library",
     "frameworks": ["react"],
@@ -346,7 +348,7 @@
   {
     "name": "Aceternity UI",
     "value": "aceternity-ui",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/aceternity-ui.png",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199206/aceternity-ui_cijyak.png",
     "link": "https://ui.aceternity.com/",
     "category": "library",
     "frameworks": ["react"],
@@ -365,7 +367,7 @@
   {
     "name": "Origin UI",
     "value": "origin-ui",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/origin-ui.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199209/origin-ui_ko4bow.svg",
     "link": "https://originui.com/",
     "category": "library",
     "frameworks": ["react"],
@@ -389,6 +391,7 @@
   {
     "name": "HeroUI",
     "value": "hero-ui",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199206/hero-ui_pobqpt.svg",
     "link": "https://www.heroui.com/",
     "category": "library",
     "frameworks": ["react"],
@@ -431,7 +434,7 @@
   {
     "name": "Magic UI",
     "value": "magic-ui",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/magic-ui.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199207/magic-ui_pjpjza.svg",
     "link": "https://magicui.design/",
     "category": "library",
     "frameworks": ["react"],
@@ -446,6 +449,7 @@
   {
     "name": "CuiCui",
     "value": "cui-cui",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199206/cui-cui_nnrib7.png",
     "link": "https://cuicui.day/",
     "category": "library",
     "frameworks": ["react"],
@@ -464,7 +468,7 @@
   {
     "name": "Ant Design",
     "value": "ant-design",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/ant-design-dark.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199206/ant-design-dark_lc17ya.svg",
     "link": "https://ant.design/",
     "category": "library",
     "frameworks": [
@@ -492,7 +496,7 @@
   {
     "name": "Mantine",
     "value": "mantine",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/mantine.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199208/mantine_vw5uov.svg",
     "link": "https://mantine.dev/",
     "category": "library",
     "frameworks": ["react"],
@@ -518,6 +522,7 @@
   {
     "name": "Tailus UI React",
     "value": "tailus-ui-react",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199211/tailus-ui-react_zw824i.svg",
     "link": "https://ui.tailus.io/",
     "category": "library",
     "frameworks": ["react"],
@@ -541,7 +546,7 @@
   {
     "name": "Mamba UI",
     "value": "mamba-ui",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/mamba-ui.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199208/mamba-ui_plgml5.svg",
     "link": "https://mambaui.com/",
     "category": "library",
     "frameworks": [
@@ -567,7 +572,7 @@
   {
     "name": "Reactbits",
     "value": "reactbits",
-    "img": "https://xwwojfwzfoukkjnkzqkw.supabase.co/storage/v1/object/public/images/libraries/reactbits.svg",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199210/reactbits_niecyi.svg",
     "link": "https://www.reactbits.dev/",
     "category": "library",
     "frameworks": [
@@ -605,6 +610,7 @@
   {
     "name": "NG-ZORRO",
     "value": "ng-zorro",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199208/ng-zorro_s3j1w3.svg",
     "link": "https://ng.ant.design/",
     "category": "library",
     "frameworks": ["angular"],
@@ -631,6 +637,7 @@
   {
     "name": "Ant Design Vue",
     "value": "ant-design-vue",
+    "img": "https://res.cloudinary.com/drh75w8s9/image/upload/v1751199206/ant-design-vue_y82hi6.svg",
     "link": "https://antdv.com/",
     "category": "library",
     "frameworks": [
