@@ -15,3 +15,6 @@ restart:
 
 env-backend:
 	@docker compose --env-file .env.prod exec backend /bin/sh
+
+env-db:
+	@docker compose --env-file .env.prod exec db /bin/sh
