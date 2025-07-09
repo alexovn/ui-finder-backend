@@ -38,7 +38,7 @@ services:
     networks:
       - ui-finder-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4444/healthcheck"]
+      test: ["CMD", "curl", "-f", "http://backend:4444/api/healthcheck"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -58,6 +58,18 @@ services:
       - db
     networks:
      - ui-finder-net
+
+  nginx:
+    image: nginx:stable
+    container_name: ui-finder-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - backend
+    networks:
+      - ui-finder-net
 
 networks:
   ui-finder-net:
