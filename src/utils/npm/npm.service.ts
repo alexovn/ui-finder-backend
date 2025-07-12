@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
@@ -14,8 +15,12 @@ export class NpmService {
           `https://api.npmjs.org/downloads/point/last-month/${packageName}`,
         ),
       );
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return res;
+
+      if (!res) {
+        return null;
+      }
+
+      return (res.data.downloads as number) || 0;
     } catch (err: any) {
       const axiosError = err as AxiosError;
 

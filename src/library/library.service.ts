@@ -1,23 +1,40 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+
 import { PrismaService } from '../prisma.service';
+import { GithubService } from '../utils/github/github.service';
+import { NpmService } from '../utils/npm/npm.service';
+import { LibraryStatsService } from '../utils/library-stats/library-stats.service';
+
+import { Library, Libraries } from './interfaces/library.interface';
 import { GetLibrariesDto } from './dto/get-libraries.dto';
 import { GetLibraryParamsDto } from './dto/get-library.dto';
 import { CreateLibraryDto } from './dto/create-library.dto';
-import { Library, Libraries } from './interfaces/library.interface';
-import { GithubService } from '../github/github.service';
-import { NpmService } from '../npm/npm.service';
 import {
   UpdateLibraryDto,
   UpdateLibraryParamsDto,
 } from './dto/update-library.dto';
 
 @Injectable()
-export class LibraryService {
+export class LibraryService implements OnModuleInit {
+  BATCH_SIZE: number;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly githubService: GithubService,
     private readonly npmService: NpmService,
-  ) {}
+    private readonly libraryStatsService: LibraryStatsService,
+  ) {
+    this.BATCH_SIZE = 100;
+  }
+
+  async onModuleInit() {
+    await this.updateLibraryStats();
+  }
 
   async getLibraries(query: GetLibrariesDto): Promise<Libraries> {
     const {
@@ -100,7 +117,6 @@ export class LibraryService {
       searchQuery,
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const total = Number(totalResult[0]?.total || 0);
     const totalPages = Math.ceil(total / perPage);
 
@@ -174,7 +190,6 @@ export class LibraryService {
       )
     ) {
       throw new BadRequestException({
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         message: `Wrong frameworks array: ${body.frameworks}.`,
       });
     }
@@ -182,7 +197,6 @@ export class LibraryService {
       !existingFeatures.some((feature) => body.features.includes(feature.value))
     ) {
       throw new BadRequestException({
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         message: `Wrong features array: ${body.features}.`,
       });
     }
@@ -192,7 +206,6 @@ export class LibraryService {
       )
     ) {
       throw new BadRequestException({
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         message: `Wrong components array: ${body.components}.`,
       });
     }
@@ -206,18 +219,15 @@ export class LibraryService {
         '',
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const [githubRepoData, npmPackageData] = await Promise.all([
         this.githubService.fetchLibraryGithubData(repo),
         this.npmService.fetchLibraryNpmData(packageName),
       ]);
 
       if (githubRepoData) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         githubData = githubRepoData;
       }
       if (npmPackageData) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         npmData = npmPackageData;
       }
     }
@@ -248,9 +258,9 @@ export class LibraryService {
             id: component.id,
           })),
         },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
         githubStars: (githubData?.stargazers_count as number) || 0,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
         npmDownloads: (npmData?.downloads as number) || 0,
       },
       include: {
@@ -322,18 +332,15 @@ export class LibraryService {
         '',
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const [githubRepoData, npmPackageData] = await Promise.all([
         this.githubService.fetchLibraryGithubData(repo),
         this.npmService.fetchLibraryNpmData(packageName),
       ]);
 
       if (githubRepoData) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         githubData = githubRepoData;
       }
       if (npmPackageData) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         npmData = npmPackageData;
       }
     }
@@ -358,10 +365,9 @@ export class LibraryService {
       githubRepo: body.githubRepo || undefined,
       npmPackage: body.npmPackage || undefined,
       githubStars: githubData
-        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          (githubData.stargazers_count as number)
+        ? (githubData.stargazers_count as number)
         : undefined,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
       npmDownloads: npmData ? (npmData.downloads as number) : undefined,
     };
 
@@ -379,5 +385,35 @@ export class LibraryService {
     });
 
     return library;
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_6AM)
+  async updateLibraryStats() {
+    let page = 0;
+
+    while (true) {
+      const libraries = await this.prisma.library.findMany({
+        skip: page * this.BATCH_SIZE,
+        take: this.BATCH_SIZE,
+        select: {
+          id: true,
+          githubRepo: true,
+          npmPackage: true,
+        },
+      });
+
+      if (libraries.length === 0) break;
+
+      const requests = libraries.map(async (library) => {
+        return await this.libraryStatsService.updateLibraryStats(
+          library.id,
+          library.githubRepo,
+          library.npmPackage,
+        );
+      });
+
+      await Promise.all(requests);
+      page++;
+    }
   }
 }

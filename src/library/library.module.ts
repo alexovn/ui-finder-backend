@@ -1,16 +1,28 @@
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
+import { PrismaService } from '../prisma.service';
+
 import { LibraryController } from './library.controller';
 import { LibraryService } from './library.service';
-import { PrismaService } from '../prisma.service';
-import { GithubModule } from '../github/github.module';
-import { NpmModule } from '../npm/npm.module';
-import { GithubService } from '../github/github.service';
-import { NpmService } from '../npm/npm.service';
-import { HttpModule } from '@nestjs/axios';
+
+import { GithubModule } from '../utils/github/github.module';
+import { GithubService } from '../utils/github/github.service';
+
+import { NpmModule } from '../utils/npm/npm.module';
+import { NpmService } from '../utils/npm/npm.service';
+
+import { LibraryStatsModule } from '../utils/library-stats/library-stats.modules';
+import { LibraryStatsService } from '../utils/library-stats/library-stats.service';
 
 @Module({
-  imports: [GithubModule, NpmModule, HttpModule],
+  imports: [GithubModule, NpmModule, LibraryStatsModule, HttpModule],
   controllers: [LibraryController],
-  providers: [PrismaService, LibraryService, GithubService, NpmService],
+  providers: [
+    PrismaService,
+    LibraryService,
+    GithubService,
+    NpmService,
+    LibraryStatsService,
+  ],
 })
 export class LibraryModule {}

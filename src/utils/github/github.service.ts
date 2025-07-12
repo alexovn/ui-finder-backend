@@ -1,19 +1,32 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GithubService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async fetchLibraryGithubData(repo: string) {
     try {
       const res: any = await lastValueFrom(
-        this.httpService.get(`https://api.github.com/repos/${repo}`),
+        this.httpService.get(`https://api.github.com/repos/${repo}`, {
+          headers: {
+            Authorization: `token ${this.configService.get('GITHUB_TOKEN')}`,
+          },
+        }),
       );
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return res;
+
+      if (!res) {
+        return null;
+      }
+
+      return (res.data.stargazers_count as number) || 0;
     } catch (err: any) {
       const axiosError = err as AxiosError;
 
