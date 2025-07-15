@@ -19,8 +19,8 @@ export class GetLibrariesDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(['createdAt', 'githubStarts', 'npmDownloads'])
-  orderBy?: 'createdAt' | 'githubStarts' | 'npmDownloads';
+  @IsIn(['createdAt', 'githubStars', 'npmDownloads'])
+  orderBy?: 'createdAt' | 'githubStars' | 'npmDownloads';
 
   @IsOptional()
   @IsString()
