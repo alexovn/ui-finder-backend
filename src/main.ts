@@ -4,7 +4,11 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://www.ui-finder.dev'],
+    origin: [
+      'http://localhost:3000',
+      'https://ui-finder.dev',
+      'https://www.ui-finder.dev',
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   });
