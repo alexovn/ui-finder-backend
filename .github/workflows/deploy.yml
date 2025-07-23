@@ -23,7 +23,7 @@ jobs:
     - name: Pull and restart containers
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd /apps/ui-finder-backend
+          cd apps/ui-finder-backend
           git pull origin main
           docker compose --env-file .env.prod down
           docker compose --env-file .env.prod up -d --build --force-recreate --remove-orphans
